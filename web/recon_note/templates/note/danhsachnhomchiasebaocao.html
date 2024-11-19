@@ -1,0 +1,109 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+Danh sách nhóm chia sẻ báo cáo
+{% endblock title %}
+
+{% block custom_js_css_link %}
+{% endblock custom_js_css_link %}
+
+{% block breadcrumb_title %}
+{% endblock breadcrumb_title %}
+
+{% block page_title %}
+Danh sách nhóm chia sẻ báo cáo
+{% endblock page_title %}
+
+{% block main_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="p-2">
+        <div class="row">
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+          </div>
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+            <a class="btn btn-soft-primary float-end ms-1" data-toggle="tooltip" data-placement="top" title="Add New File">Nhập nhiều</a>
+            <a class="btn btn-soft-primary float-end ms-1" data-toggle="tooltip" data-placement="top" title="Add New File">Thêm mới</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <table id="file_table" class="table dt-responsive w-100">
+        <thead>
+          <tr>
+            <th class="text-center">TT</th>
+            <th class="text-center">Tên nhóm</th>
+            <th class="text-center">Mô tả</th>
+            <th class="text-center">Số lượng dự án</th>
+            <th class="text-center">Số lượng báo cáo</th>
+            <th class="text-center">Số máy tính chia sẻ</th>
+            <th class="text-center">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- {% for file in files.all %} -->
+          <tr>
+            <td class="text-center"></td>
+            <td class="text-center"></td>
+            <td class="text-center"></td>
+            <td class="text-center"></td>
+            <td class="text-center"></td>
+            <td class="text-center"></td>
+            <td class="text-center">
+              <a class="btn btn-soft-success" href="#" data-toggle="tooltip" data-placement="top" title="Scan File Upload"></a>
+                Xem chi tiết máy
+              </a>
+              <a class="btn btn-soft-warning" href="#" data-toggle="tooltip" data-placement="top" title="Scan File Upload"></a>
+                Xem chi tiết dự án
+              </a>
+              <a class="btn btn-soft-danger text-danger" href="#" data-toggle="tooltip" data-placement="top" title="Delete File Upload"></a>
+                Xóa
+              </a>
+              <a class="btn btn-soft-primary" href="#" data-toggle="tooltip" data-placement="top"></a>
+                Xem chi tiết báo cáo
+              </a>
+            </td>
+          </tr>
+          <!-- {% endfor %} -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}
+
+
+{% block page_level_script %}
+<script src="{% static 'scanEngine/js/custom_scan_engine.js' %}"></script>
+<script src="{% static 'custom/custom.js' %}"></script>
+<script src="{% static 'targetApp/js/custom_organization.js' %}"></script>
+<script>
+$(document).ready(function() {
+  var file_table = $('#file_table').DataTable({
+    "oLanguage": {
+      "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>' },
+      "sInfo": "Showing page _PAGE_ of _PAGES_",
+      "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+      "sSearchPlaceholder": "Search...",
+      "sLengthMenu": "Results :  _MENU_",
+    },
+    "dom": "<'dt--top-section'<'row'<'col-12 col-sm-6 d-flex justify-content-sm-start justify-content-center mt-sm-0 mt-3'f><'col-12 col-sm-6 d-flex justify-content-sm-end justify-content-center'l>>>" +
+    "<'table-responsive'tr>" +
+    "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center'<'dt--pages-count  mb-sm-0 mb-3'i><'dt--pagination'p>>",
+    "lengthMenu": [5, 10, 20, 50],
+    "pageLength": 50,
+    "initComplete": function(settings, json) {
+      $('[data-toggle="tooltip"]').tooltip();
+    }
+  });
+  multiCheck(file_table);
+});
+</script>
+{% endblock page_level_script %}

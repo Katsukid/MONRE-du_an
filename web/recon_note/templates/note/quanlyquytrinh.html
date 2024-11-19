@@ -1,0 +1,440 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}
+Quản lý quy trình
+{% endblock title %}
+{% block custom_js_css_link %}
+<link rel="stylesheet" type="text/css" href="{% static 'plugins/todo/todolist.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'plugins/select2/select2.min.css' %}">
+<link href="{% static 'plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
+<style>
+    body 
+        .left-column {
+            background-color: #4a4a4a;
+            color: white;
+            padding: 20px;
+            height: 100vh;
+        }
+        .left-column button {
+            background-color: #e7f0fc;
+            border: none;
+            color: #333;
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 10px;
+            text-align: left;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .left-column button.active {
+            background-color: #5c9cf7;
+            color: white;
+        }
+        .right-column {
+            padding: 20px;
+            height: 100vh;
+            background-color: #ffffff;
+            overflow-y: auto;
+        }
+        .pdf-viewer {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #ccc;
+        }
+    </style>
+{% endblock custom_js_css_link %}
+{% block main_content %}
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="list-base-quytrinh-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">
+        Danh mục quy trình
+    </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="list-quytrinh-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">
+        Danh sách quy trình
+    </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="add-quytrinh-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">
+        Thêm quy trình
+    </button>
+    </li>
+  </ul>
+  <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="list-base-quytrinh-tab">
+        <div class="row">
+            <div class="row">
+                <div class="col-12">
+                  <div class="card">
+                    <div class="p-2">
+                      <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                          <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="filterMenu">
+                            Filter <i class="fe-filter"></i>
+                          </button>
+                          <div id="filteringText" class="mt-2">
+                          </div>
+                          <div class="dropdown-menu" style="width: 30%">
+                            <div class="px-4 py-3">
+                              <h4 class="headline-title">Filters</h4>
+                              <div class="">
+                                <label for="filterByOrganization" class="form-label">Filter by Organization</label>
+                                <select class="form-control" id="filterByOrganization">
+                                </select>
+                              </div>
+                              <div class="">
+                                <label for="filterByTarget" class="form-label">Filter by Targets</label>
+                                <select class="form-control" id="filterByTarget">
+                                </select>
+                              </div>
+                              <div class="">
+                                <label for="filterByScanType" class="form-label">Filter by Scan Type</label>
+                                <select class="form-control" id="filterByScanType">
+                                </select>
+                              </div>
+                              <div class="">
+                                <label for="filterByScanStatus" class="form-label">Filter by Scan Status</label>
+                                <select class="form-control" id="filterByScanStatus">
+                                </select>
+                              </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-ite text-primary float-end" id="resetFilters">Reset Filters</a>
+                          </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                          <a class="btn btn-soft-danger float-end disabled ms-1" href="#" onclick="deleteMultipleScan()" id="delete_multiple_button">Delete Multiple Scans</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="card">
+                    <form method="POST" id="scan_history_form">
+                      {% csrf_token %}
+                      <table id="scan_history_table" class="table dt-responsive w-100">
+                        <thead>
+                          <tr>
+                            <th class="checkbox-column text-center"></th>
+                            <th class="text-center">Serial Number</th>
+                            <th>Tên quy trình</th>
+                            <th>Mô tả</th>
+                            <th class="text-center">Tài liệu chi tiết</th>
+                            <!-- <th class="">Scan Engine Used</th>
+                            <th>Last Scan</th>
+                            <th>Initiated By</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Progress</th>
+                            <th class="text-center no-sorting">Action</th> -->
+                          </tr>
+                        </thead>
+                            <tr>
+                                <td class="checkbox-column"> 1 </td>
+                                <td class="text-center"> 1 </td>
+                                <td> Kiểm tra đánh giá ATTT thiết kế </td>
+                                <td> 2 </td>
+                                <td class="text-center"> <button class="btn btn-success"> Xem</button></td>
+                            </tr>
+                            <tr>
+                                <td class="checkbox-column"> 1 </td>
+                                <td class="text-center"> 1 </td>
+                                <td> Kiểm tra đánh giá ATTT mã nguồn </td>
+                                <td> 2 </td>
+                                <td class="text-center"> <button class="btn btn-success"> Xem</button> </td>
+                            </tr>
+                            <tr>
+                                <td class="checkbox-column"> 1 </td>
+                                <td class="text-center"> 1 </td>
+                                <td> Kiểm tra đánh giá ATTT tĩnh </td>
+                                <td> 2 </td>
+                                <td class="text-center"> <button class="btn btn-success"> Xem</button> </td>
+                            </tr>
+                            <tr>
+                                <td class="checkbox-column"> 1 </td>
+                                <td class="text-center"> 1 </td>
+                                <td> Kiểm tra đánh giá ATTT động </td>
+                                <td> 2 </td>
+                                <td class="text-center"> <button class="btn btn-success"> Xem</button> </td>
+                            </tr>
+                      </table>
+                    </form>
+                  </div>
+                </div>
+              </div>
+        </div>
+    </div>
+    <div class="tab-pane fade container-fluid" id="profile" role="tabpanel" aria-labelledby="list-quytrinh-tab">
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="list-base-quytrinh-tab">
+            <div class="row">
+                <div class="row">
+                    <div class="col-12">
+                      <div class="card">
+                        <div class="p-2">
+                          <div class="row">
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                              <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="filterMenu">
+                                Filter <i class="fe-filter"></i>
+                              </button>
+                              <div id="filteringText" class="mt-2">
+                              </div>
+                              <div class="dropdown-menu" style="width: 30%">
+                                <div class="px-4 py-3">
+                                  <h4 class="headline-title">Filters</h4>
+                                  <div class="">
+                                    <label for="filterByOrganization" class="form-label">Filter by Organization</label>
+                                    <select class="form-control" id="filterByOrganization">
+                                    </select>
+                                  </div>
+                                  <div class="">
+                                    <label for="filterByTarget" class="form-label">Filter by Targets</label>
+                                    <select class="form-control" id="filterByTarget">
+                                    </select>
+                                  </div>
+                                  <div class="">
+                                    <label for="filterByScanType" class="form-label">Filter by Scan Type</label>
+                                    <select class="form-control" id="filterByScanType">
+                                    </select>
+                                  </div>
+                                  <div class="">
+                                    <label for="filterByScanStatus" class="form-label">Filter by Scan Status</label>
+                                    <select class="form-control" id="filterByScanStatus">
+                                    </select>
+                                  </div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-ite text-primary float-end" id="resetFilters">Reset Filters</a>
+                              </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                              <a class="btn btn-soft-danger float-end disabled ms-1" href="#" onclick="deleteMultipleScan()" id="delete_multiple_button">Delete Multiple Scans</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="card">
+                        <form method="POST" id="scan_history_form">
+                          {% csrf_token %}
+                          <table id="scan_history_table" class="table dt-responsive w-100">
+                            <thead>
+                              <tr>
+                                <th class="checkbox-column text-center"></th>
+                                <th class="text-center">Serial Number</th>
+                                <th>Tên quy trình</th>
+                                <th>Mô tả</th>
+                                <th class="text-center">Tài liệu chi tiết</th>
+                                <!-- <th class="">Scan Engine Used</th>
+                                <th>Last Scan</th>
+                                <th>Initiated By</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Progress</th>
+                                <th class="text-center no-sorting">Action</th> -->
+                              </tr>
+                            </thead>
+                                <tr>
+                                    <td class="checkbox-column"> 1 </td>
+                                    <td class="text-center"> 1 </td>
+                                    <td> Kiểm tra đánh giá ATTT 1</td>
+                                    <td> 2 </td>
+                                    <td class="text-center"> <button class="btn btn-success"> Xem</button></td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-column"> 1 </td>
+                                    <td class="text-center"> 1 </td>
+                                    <td> Kiểm tra đánh giá ATTT 2 </td>
+                                    <td> 2 </td>
+                                    <td class="text-center"> <button class="btn btn-success"> Xem</button> </td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-column"> 1 </td>
+                                    <td class="text-center"> 1 </td>
+                                    <td> Kiểm tra đánh giá ATTT DA 1 </td>
+                                    <td> 2 </td>
+                                    <td class="text-center"> <button class="btn btn-success"> Xem</button> </td>
+                                </tr>
+                                <tr>
+                                    <td class="checkbox-column"> 1 </td>
+                                    <td class="text-center"> 1 </td>
+                                    <td> Kiểm tra đánh giá ATTT DA 2 </td>
+                                    <td> 2 </td>
+                                    <td class="text-center"> <button class="btn btn-success"> Xem</button> </td>
+                                </tr>
+                          </table>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade container-fluid" id="contact" role="tabpanel" aria-labelledby="add-quytrinh-tab">
+        <div class="row">
+            <!-- Left Column: Navigation -->
+            <div class="col-md-3">
+                <div class="mb-1 row">
+                    <div class="input-group mb-1">
+                        <span class="input-group-text" id="inputNameLabel">Quy trình</span>
+                        <input type="text" class="form-control" id="inputName" aria-describedby="inputNameLabel">
+                      </div>
+                  </div>
+                <!-- <h5 class="text-center">Quy trình A</h5> -->
+                <div class="row">
+                  <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" checked>
+                      <label class="form-check-label" for="flexSwitchCheckDefault">1. Quy trình thiết kế</label>
+                      <i class="fa fa-info-circle" aria-hidden="true" id="btn1" onclick="showPDF('/staticfiles/pdfs/Iris-flower-casestudy.pdf', 'Quy trình thiết kế')"></i>
+                  </div>
+                  <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
+                      <label class="form-check-label" for="flexSwitchCheckChecked">2. Quy trình ĐG mã nguồn</label>
+                      <i class="fa fa-info-circle" aria-hidden="true" id="btn2" onclick="showPDF('/staticfiles/pdfs/Iris-flower-casestudy.pdf', 'Quy trình ĐG mã nguồn')"></i>
+                  </div>
+                  <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDisabled" checked>
+                      <label class="form-check-label" for="flexSwitchCheckDisabled">3. Quy trình ĐG tĩnh</label>
+                      <i class="fa fa-info-circle" aria-hidden="true" id="btn3" onclick="showPDF('/staticfiles/pdfs/Iris-flower-casestudy.pdf', 'Quy trình ĐG tĩnh')"></i>
+                  </div>
+                  <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckCheckedDisabled" checked>
+                      <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">4. Quy trình ĐG động</label>
+                      <i class="fa fa-info-circle" aria-hidden="true" id="btn4" onclick="showPDF('/staticfiles/pdfs/Iris-flower-casestudy.pdf', 'Quy trình ĐG động')"></i>
+                  </div>
+                </div>
+                <div class="input-group mt-1">
+                    <span class="input-group-text">Mô tả</span>
+                    <textarea class="form-control" aria-label="With textarea"></textarea>
+                  </div>
+                <button type="button" class="btn btn-primary">Lưu</button>
+            </div>
+            <!-- Right Column: PDF Viewer -->
+            <div class="col-md-9 right-column">
+                <div id="pdf-title" class="content-header">Chi tiết</div>
+                <iframe id="pdfViewer" class="pdf-viewer" src=""></iframe>
+            </div>
+        </div>
+    </div>
+  </div>
+{% endblock main_content %}
+{% block page_level_script %}
+<script src="{% static 'plugins/select2/select2.min.js' %}"></script>
+<script src="{% static 'note/js/todo.js' %}"></script>
+<script src="{% static 'plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+<script>
+    // Function to display the selected PDF in the iframe
+    function showPDF(pdfFile, title) {
+        // Update the title
+        document.getElementById('pdf-title').textContent = title;
+        // Update the PDF viewer iframe source
+        const pdfViewer = document.getElementById('pdfViewer');
+        pdfViewer.src = pdfFile;
+        // Remove active class from all buttons
+        document.querySelectorAll('.nav-btn').forEach(button => {
+            button.classList.remove('active');
+        });
+        // Set the active class for the clicked button
+        const clickedButton = document.querySelector(`[onclick*='${pdfFile}']`);
+        if (clickedButton) clickedButton.classList.add('active');
+    }
+</script>
+<script>
+    $(document).ready(function() {
+      var table = $('#scan_history_table').DataTable({
+        headerCallback: function(e, a, t, n, s) {
+          e.getElementsByTagName("th")[0].innerHTML='<div class="form-check mb-2 form-check-primary"><input type="checkbox" class="float-start form-check-input chk-parent" id="head_checkbox" onclick=mainCheckBoxSelected(this)>\n<span class="new-control-indicator"></span><span style="visibility:hidden">c</span></div>\n'
+        },
+        "columnDefs":[
+          { 'visible': false, 'targets': [1] },
+          {
+            "targets":0, "width":"20px", "className":"", "orderable":!1, render:function(e, a, t, n) {
+              return'<div class="form-check mb-2 form-check-primary"><input type="checkbox" name="targets_checkbox['+ e + ']" class="float-start form-check-input targets_checkbox" value="' + e + '" onchange=toggleMultipleTargetButton()>\n<span class="new-control-indicator"></span><span style="visibility:hidden">c</span></div>'
+            },
+  
+          }
+        ],
+        "order": [[1, 'desc']],
+        "dom": "<'dt--top-section'<'row'<'col-12 col-sm-6 d-flex justify-content-sm-start justify-content-center mt-sm-0 mt-3'f><'col-12 col-sm-6 d-flex justify-content-sm-end justify-content-center'l>>>" +
+        "<'table-responsive'tr>" +
+        "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center'<'dt--pages-count  mb-sm-0 mb-3'i><'dt--pagination'p>>",
+        "oLanguage": {
+          "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>' },
+          "sInfo": "Showing page _PAGE_ of _PAGES_",
+          "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+          "sSearchPlaceholder": "Search...",
+          "sLengthMenu": "Results :  _MENU_",
+        },
+        "stripeClasses": [],
+        "lengthMenu": [5, 10, 20, 30, 40, 50],
+        "pageLength": 20,
+      });
+      multiCheck(table);
+    });
+  
+    function checkedCount() {
+      // this function will count the number of boxes checked
+      item = document.getElementsByClassName("targets_checkbox");
+      count = 0;
+      for (var i = 0; i < item.length; i++) {
+        if (item[i].checked) {
+          count++;
+        }
+      }
+      return count;
+    }
+  
+  
+    function toggleMultipleTargetButton() {
+      if (checkedCount() > 0) {
+        $("#delete_multiple_button").removeClass("disabled");
+      } else {
+        $("#delete_multiple_button").addClass("disabled");
+      }
+    }
+  
+    function mainCheckBoxSelected(checkbox) {
+      if (checkbox.checked) {
+        $("#delete_multiple_button").removeClass("disabled");
+        $(".targets_checkbox").prop('checked', true);
+      } else {
+        $("#delete_multiple_button").addClass("disabled");
+        $(".targets_checkbox").prop('checked', false);
+      }
+    }
+  
+    function deleteMultipleScan() {
+      if (!checkedCount()) {
+        swal({
+          title: '',
+          text: "Oops! No targets has been selected!",
+          type: 'error',
+          padding: '2em'
+        })
+      } else {
+        // atleast one target is selected
+        swal.queue([{
+          title: 'Are you sure you want to delete ' + checkedCount() + ' Scans?',
+          text: "This action is irreversible.\nThis will delete all the scan data and vulnerabilities related to the scan.",
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Delete',
+          padding: '2em',
+          showLoaderOnConfirm: true,
+          preConfirm: function() {
+            deleteForm = document.getElementById("scan_history_form");
+            deleteForm.action = "../delete/multiple";
+            deleteForm.submit();
+          }
+        }])
+      }
+    }
+  </script>
+{% endblock page_level_script %}

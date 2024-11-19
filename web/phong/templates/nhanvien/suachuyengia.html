@@ -1,0 +1,129 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+Sửa thông tin nhân viên
+{% endblock title %}
+
+{% block custom_js_css_link %}
+{% endblock custom_js_css_link %}
+
+{% block breadcrumb_title %}
+{% endblock breadcrumb_title %}
+
+{% block page_title %}
+Sửa thông tin nhân viên
+{% endblock page_title %}
+
+{% block main_content %}
+<div class="row"></div>
+  <div class="col-12">
+    <div class="card">
+      <div class="p-2">
+        <div class="row">
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+          </div>
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+            <a class="btn btn-soft-primary float-end ms-1" href="" data-toggle="tooltip" data-placement="top" title="Nhập nhiều">Nhập nhiều</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <form method="POST">
+          {% csrf_token %}
+            <div class="mb-3">
+              <label for="soHieuCG" class="form-label">{{ form.so_hieu_cg.label }}</label>
+              {{ form.so_hieu_cg }} <!-- Form field cho số hiệu chuyên gia -->
+            </div>
+
+            <div class="mb-3">
+              <label for="ten" class="form-label">{{ form.ten.label }}</label>
+              {{ form.ten }} <!-- Form field cho tên -->
+            </div>
+
+            <div class="mb-3">
+              <label for="donViCongTac" class="form-label">{{ form.don_vi_cong_tac.label }}</label>
+              {{ form.don_vi_cong_tac }} <!-- Form field cho đơn vị công tác -->
+            </div>
+
+            <div class="mb-3">
+              <label for="bangCap" class="form-label">{{ form.bang_cap.label }}</label>
+              {{ form.bang_cap }} <!-- Form field cho bằng cấp -->
+            </div>
+
+            <div class="mb-3">
+              <label for="moTa" class="form-label">{{ form.mo_ta.label }}</label>
+              {{ form.mo_ta }} <!-- Form field cho mô tả -->
+            </div>
+
+            <div class="mb-3">
+              <label for="phongSelect" class="form-label">{{ form.phong.label }}</label>
+              {{ form.phong }} <!-- Form field chọn phòng -->
+            </div>
+
+            <div class="mb-3">
+              <label for="nguoiDung" class="form-label">{{ form.nguoi_dung.label }}</label>
+              {{ form.nguoi_dung }} <!-- Form field cho người dùng -->
+            </div>
+
+            <div class="mb-3">
+              <label for="nghe_nghiep" class="form-label">{{ form.nghe_nghiep.label }}</label>
+              {{ form.nghe_nghiep }} <!-- Form field cho nghề nghiệp -->
+            </div>
+          </div>
+      
+          <div class="d-flex justify-content-between">
+              <button type="button" class="btn btn-secondary">Huỷ</button>
+              <div>
+                  <button type="button" class="btn btn-warning me-2">Xoá thông tin</button>
+                  <button type="submit" class="btn btn-primary">Cập nhật</button>
+              </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}
+
+
+{% block page_level_script %}
+<script src="{% static 'scanEngine/js/custom_scan_engine.js' %}"></script>
+<script src="{% static 'custom/custom.js' %}"></script>
+<script src="{% static 'targetApp/js/custom_organization.js' %}"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#phongSelect').change(function() {
+            var phongId = $(this).val();
+            if (phongId) {
+                $.ajax({
+                    url: "{% url 'get_bophan_by_phong' %}",  // Đảm bảo URL đúng view trả về danh sách bộ phận
+                    data: {
+                        'phong_id': phongId
+                    },
+                    success: function(data) {
+                        $('#boPhanSelect').empty();
+                        $('#boPhanSelect').append('<option value="">Chọn bộ phận</option>');
+                        $.each(data.bophans, function(index, value) {
+                            $('#boPhanSelect').append('<option value="' + value.id + '">' + value.ten + '</option>');
+                        });
+                    },
+                    error: function() {
+                        alert('Không thể tải danh sách bộ phận');
+                    }
+                });
+            } else {
+                $('#boPhanSelect').empty();
+                $('#boPhanSelect').append('<option value="">Chọn bộ phận</option>');
+            }
+        });
+    });
+</script>
+{% endblock page_level_script %}

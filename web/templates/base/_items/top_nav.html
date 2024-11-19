@@ -1,0 +1,205 @@
+{% load permission_tags %}
+
+<div class="topnav">
+  <div class="container-fluid">
+    <nav class="navbar navbar-light navbar-expand-lg topnav-menu">
+      <div class="collapse navbar-collapse" id="topnav-menu-content">
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown {{scan_history_active}} {{scheduled_scan_active}}">
+            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-vul" role="button"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fe-alert-triangle me-1"></i> Lỗ hổng
+              <div class="arrow-down"></div>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="topnav-vul">
+              <a href="{% url 'all_vulns' current_project.slug %}" class="dropdown-item">Vulnerabilities/Các lỗ hổng của dự án</a>
+              <div class="dropdown-divider"></div>
+              <a href="{% url 'themnguonlohong' current_project.slug %}" class="dropdown-item">Thêm/Nhập nguồn lỗ hổng bảo mật</a>
+              <a href="{% url 'danhmucnguonlohong' current_project.slug %}" class="dropdown-item">Danh mục nguồn lỗ hổng bảo mật</a> 
+              <a href="{% url 'danhmuclohong' current_project.slug %}" class="dropdown-item">Danh mục lỗ hổng bảo mật</a>
+              <a href="{% url 'themloailohong' current_project.slug %}" class="dropdown-item">Thêm/Nhập loại lỗ hổng bảo mật</a>
+              <a href="{% url 'danhmucloailohong' current_project.slug %}" class="dropdown-item">Các loại lỗ hổng bảo mật</a>
+              <a href="{% url 'themlohong' current_project.slug %}" class="dropdown-item">Thêm/Nhập lỗ hổng bảo mật</a>
+              <!-- <a href="{% url 'sastscan_history' current_project.slug %}" class="dropdown-item">Các lỗ hổng bảo mật</a> -->
+              <div class="dropdown-divider"></div>
+              <a href="{% url 'themruiro' current_project.slug %}" class="dropdown-item">Thêm/Nhập rủi ro ATTT</a>
+              <a href="{% url 'quanlyquytrinh' current_project.slug %}" class="dropdown-item">Thêm/Nhập bản vá</a>
+              <a href="{% url 'quanlyruiro' current_project.slug %}" class="dropdown-item">Quản lý rủi ro ATTT</a>
+              <a href="{% url 'quanlyquytrinh' current_project.slug %}" class="dropdown-item">Quản lý bản vá</a>
+              <div class="dropdown-divider"></div>
+              <a href="{% url 'dangkyhotro' current_project.slug %}" class="dropdown-item">Đăng ký bộ phận cần hỗ trợ</a>
+              <a href="{% url 'danhsachchuyengia' current_project.slug %}" class="dropdown-item">Quản lý bộ phận cần hỗ trợ</a>
+              <a href="{% url 'dangkyhotro' current_project.slug %}" class="dropdown-item">Đăng ký rủi ro cần hỗ trợ</a>
+              <a href="{% url 'danhsachchuyengia' current_project.slug %}" class="dropdown-item">Quản lý rủi ro cần hỗ trợ</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown {{target_data_active}}">
+            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-process" role="button"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fe-shield me-1"></i> Quy trình
+              <div class="arrow-down"></div>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="topnav-process">
+              <a href="{% url 'danhmucbuocdanhgia' current_project.slug %}" class="dropdown-item">Danh mục bước đánh giá</a>
+              <a href="{% url 'taoquytrinhdanhgia' current_project.slug %}" class="dropdown-item">Tạo quy trình đánh giá</a>
+              <a href="{% url 'quanlyquytrinhdanhgia' current_project.slug %}" class="dropdown-item">Quản lý Quy trình đánh giá</a>  
+              <div class="dropdown-divider"></div><!-- 4 -->
+              <a href="{% url 'quanlythongtinduan' current_project.slug %}" class="dropdown-item">Quản lý thông tin dự án</a>
+              <a href="{% url 'themhosophanmem' current_project.slug %}" class="dropdown-item">Đăng ký hồ sơ phần mềm</a>
+              <!-- <a href="{% url 'danhsach_hosophanmem' current_project.slug %}" class="dropdown-item">Danh sách hồ sơ phần mềm</a> -->
+              <a href="{% url 'giamsatquytrinh' current_project.slug %}" class="dropdown-item">Giám sát quy trình</a>
+              <a href="{% url 'danhsach_hosophanmem' current_project.slug %}" class="dropdown-item">Quản lý hồ sơ phần mềm</a>
+              <a href="{% url 'quanlygiaidoanphattrien' current_project.slug %}" class="dropdown-item">Quản lý giai đoạn phát triển</a>
+              <a href="{% url 'themphienban' current_project.slug %}" class="dropdown-item">Thêm phiên bản</a>
+              <a href="{% url 'themkichban' current_project.slug %}" class="dropdown-item">Thêm kịch bản Kiểm tra, Đánh giá ATTT</a>
+              <a href="{% url 'quanlykichban' current_project.slug %}" class="dropdown-item">Quản lý kịch bản Kiểm tra, Đánh giá ATTT</a>
+              <a href="{% url 'themphienbanphanmem' current_project.slug %}" class="dropdown-item">Thêm phiên bản phần mềm</a>
+              <div class="dropdown-divider"></div>
+              <a href="{% url 'quanlyquytrinh' current_project.slug %}" class="dropdown-item">Đăng ký chia sẻ quy trình</a>
+              <a href="{% url 'quanlyquytrinh' current_project.slug %}" class="dropdown-item">Quản lý quy trình chia sẻ</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown {{target_data_active}}">
+            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-report" role="button"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fe-file-text me-1"></i> Báo cáo
+              <div class="arrow-down"></div>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="topnav-report">
+              <a href="{% url 'themchuyengia' current_project.slug %}" class="dropdown-item">Thêm/Nhập Chuyên gia</a>
+              <a href="{% url 'danhsachchuyengia' current_project.slug %}" class="dropdown-item">Quản lý Chuyên gia</a>
+              <a href="{% url 'sastscan_history' current_project.slug %}" class="dropdown-item">Quản lý báo cáo</a>
+              <a href="{% url 'sastscan_history' current_project.slug %}" class="dropdown-item">Thêm Phân tích báo cáo</a>
+              <a href="{% url 'sastscan_history' current_project.slug %}" class="dropdown-item">Quản lý Phân tích báo cáo</a>
+              <div class="dropdown-divider"></div>
+              <a href="{% url 'all_subdomains' current_project.slug %}" class="dropdown-item">Máy tính trung tâm</a>
+              <a href="{% url 'danhsachmaytinhketnoi' current_project.slug %}" class="dropdown-item">Máy tính kết nối</a>
+              <a href="{% url 'themmaytinhketnoi' current_project.slug %}" class="dropdown-item">Thêm máy tính kết nối</a>
+              <a href="{% url 'danhsachnhomchiasebaocao' current_project.slug %}" class="dropdown-item">Danh sách nhóm chia sẻ báo cáo</a>
+              <a href="{% url 'danhsachnhomnhanbaocao' current_project.slug %}" class="dropdown-item">Danh sách nhóm nhận báo cáo</a>
+              <a href="{% url 'all_endpoints' current_project.slug %}" class="dropdown-item">Thêm báo cáo chia sẻ</a>
+              <a href="{% url 'all_endpoints' current_project.slug %}" class="dropdown-item">Quản lý báo cáo chia sẻ</a>
+              <a href="{% url 'chonnhomchiase' current_project.slug %}" class="dropdown-item">Chọn nhóm chia sẻ</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown {{scan_history_active}} {{scheduled_scan_active}}">
+            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-history" role="button"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fe-activity me-1"></i> Cơ quan
+              <div class="arrow-down"></div>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="topnav-history">
+              <a href="{% url 'themphong' current_project.slug %}" class="dropdown-item">Thêm phòng</a>
+              <a href="{% url 'thembophan' current_project.slug %}" class="dropdown-item">Thêm bộ phận</a>
+              <a href="{% url 'themchucvu' current_project.slug %}" class="dropdown-item">Thêm chức vụ</a>
+              <a href="{% url 'themnhanvien' current_project.slug %}" class="dropdown-item">Thêm nhân viên</a>
+              
+              <!-- <a href="{% url 'themvaitro' current_project.slug %}" class="dropdown-item">Thêm vai trò</a> -->
+              <div class="dropdown-divider"></div>
+              <a href="{% url 'danhsachphong' current_project.slug %}" class="dropdown-item">Danh sách phòng</a>
+              <a href="{% url 'danhsachbophan' current_project.slug %}" class="dropdown-item">Danh sách bộ phận</a>
+              <a href="{% url 'danhsachchucvu' current_project.slug %}" class="dropdown-item">Danh sách chức vụ</a>
+              <a href="{% url 'danhsachnhanvien' current_project.slug %}" class="dropdown-item">Danh sách nhân viên</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown {{target_data_active}}">
+            <a class="nav-link arrow-none" href="{% url 'dashboardIndex' current_project.slug %}">
+              <i class="fe-home me-1"></i> Dashboard
+            </a>
+          </li>
+          <li class="nav-item dropdown {{target_data_active}}">
+            <a class="nav-link arrow-none" href="{% url 'list_projects' current_project.slug %}">
+              <i class="fe-folder me-1"></i> Projects
+            </a>
+          </li>
+          <li class="nav-item dropdown {{target_data_active}}">
+            <a class="nav-link arrow-none" href="{% url 'list_target' current_project.slug %}">
+              <i class="fe-crosshair me-1"></i> Targets
+            </a>
+          </li>
+          <li class="nav-item dropdown {{scan_history_active}} {{scheduled_scan_active}}">
+            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-history" role="button"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fe-activity me-1"></i> Scan History
+              <div class="arrow-down"></div>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="topnav-history">
+              <a href="{% url 'scan_history' current_project.slug %}" class="dropdown-item">Scan History</a>
+              <a href="{% url 'subscan_history' current_project.slug %}" class="dropdown-item">Sub Scan History</a>
+              <a href="{% url 'sastscan_history' current_project.slug %}" class="dropdown-item">SAST Scan History</a>
+              <a href="{% url 'scheduled_scan_view' current_project.slug %}" class="dropdown-item">Scheduled Scan</a>
+              <div class="dropdown-divider"></div>
+              <a href="{% url 'all_subdomains' current_project.slug %}" class="dropdown-item">All Subdomains</a>
+              <a href="{% url 'all_endpoints' current_project.slug %}" class="dropdown-item">All Endpoints</a>
+            </div>
+          </li>
+          <!-- <li class="nav-item dropdown">
+            <a class="nav-link arrow-none" href="{% url 'all_vulns' current_project.slug %}">
+              <i class="fe-alert-triangle me-1"></i> Vulnerabilities
+            </a>
+          </li> -->
+          <li class="nav-item dropdown {{recon_note_active}}">
+            <a class="nav-link arrow-none" href="{% url 'list_note' current_project.slug %}">
+              <i class="fe-check-square me-1"></i> Todo
+            </a>
+          </li>
+          <li class="nav-item dropdown {{organization_active}}">
+            <a class="nav-link arrow-none" href="{% url 'list_organization' current_project.slug %}">
+              <i class="fe-briefcase me-1"></i> Organization
+            </a>
+          </li>
+          <li class="nav-item dropdown {{scan_engine_nav_active}}">
+            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-scanengine" role="button"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fe-cpu me-1"></i> Scan Engine
+              <div class="arrow-down"></div>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="topnav-scanengine">
+              {% if user|can:'modify_scan_configurations' %}
+              <a href="{% url 'scan_engine_index' current_project.slug %}" class="dropdown-item">Scan Engines</a>
+              {% endif %}
+              {% if user|can:'modify_wordlists' %}
+              <a href="{% url 'wordlist_list' current_project.slug %}" class="dropdown-item">Wordlists</a>
+              {% endif %}
+              {% if user|can:'modify_file_upload' %}
+              <a href="{% url 'file_list' current_project.slug %}" class="dropdown-item">SAST</a>
+              {% endif %}
+              {% if user|can:'modify_interesting_lookup' %}
+              <a href="{% url 'interesting_lookup' current_project.slug %}" class="dropdown-item">Interesting Lookup</a>
+              {% endif %}
+            </div>
+          </li>
+          <li class="nav-item dropdown {{settings_nav_active}}">
+            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-settings" role="button"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fe-settings me-1"></i> Settings
+              <div class="arrow-down"></div>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="topnav-settings">
+              {% if user|can:'modify_scan_configurations' %}
+              <a href="{% url 'proxy_settings' current_project.slug %}" class="dropdown-item">Proxies</a>
+              <a href="{% url 'tool_settings' current_project.slug %}" class="dropdown-item">Tool Settings</a>
+              {% endif %}
+              {% if user|can:'modify_system_configurations' %}
+              <a href="{% url 'api_vault' current_project.slug %}" class="dropdown-item">API Vault</a>
+              <a href="{% url 'llm_toolkit' current_project.slug %}" class="dropdown-item">LLM Toolkit</a>
+              <a href="{% url 'tool_arsenal' current_project.slug %}" class="dropdown-item">Tools Arsenal</a>
+              {% endif %}
+              {% if user|can:'modify_scan_report' %}
+              <a href="{% url 'report_settings' current_project.slug %}" class="dropdown-item">Report Settings</a>
+              {% endif %}
+              {% if user|can:'modify_system_configurations' %}
+              <a href="{% url 'rengine_settings' current_project.slug %}" class="dropdown-item">reNgine Settings</a>
+              {% endif %}
+              {% if user|can:'modify_scan_configurations' %}
+              <a href="{% url 'hackerone_settings' current_project.slug %}" class="dropdown-item">Hackerone Settings</a>
+              <a href="{% url 'notification_settings' current_project.slug %}" class="dropdown-item">Notification Settings</a>
+              {% endif %}
+            </div>
+          </li>
+        </ul>
+      </div>
+      <span class="badge bg-blue" data-bs-toggle="tooltip" data-bs-placement="top" title="Current Project">{{current_project.name}}</span>
+    </nav>
+  </div>
+</div>

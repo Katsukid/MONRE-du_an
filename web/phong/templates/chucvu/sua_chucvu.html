@@ -1,0 +1,58 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+Danh sách nhóm chia sẻ báo cáo
+{% endblock title %}
+
+{% block custom_js_css_link %}
+{% endblock custom_js_css_link %}
+
+{% block breadcrumb_title %}
+{% endblock breadcrumb_title %}
+
+{% block page_title %}
+Danh sách nhóm chia sẻ báo cáo
+{% endblock page_title %}
+
+{% block main_content %}
+<!-- templates/chucvu/sua_chuc_vu.html -->
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="p-2">
+          <h5>Sửa Chức Vụ</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <form method="POST">
+              {% csrf_token %}
+              <div class="mb-3">
+                  <label for="chucVuTen" class="form-label">Tên chức vụ</label>
+                  {{ form.ten }}
+              </div>
+              <div class="mb-3">
+                  <label for="chucVuMoTa" class="form-label">Mô tả</label>
+                  {{ form.mo_ta }}
+              </div>
+              <div class="d-flex justify-content-between">
+                  <button type="button" class="btn btn-secondary">Huỷ</button>
+                  <button type="submit" class="btn btn-primary">Cập nhật</button>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+{% endblock main_content %}
+
+
+{% block page_level_script %}
+{% endblock page_level_script %}

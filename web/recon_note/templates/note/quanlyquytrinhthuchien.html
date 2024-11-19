@@ -1,0 +1,461 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}
+Recon Todo
+{% endblock title %}
+{% block custom_js_css_link %}
+<link rel="stylesheet" type="text/css" href="{% static 'plugins/todo/todolist.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'plugins/select2/select2.min.css' %}">
+<link href="{% static 'plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
+<style>
+  body {
+      font-family: "Cerebri Sans", sans-serif;
+      background-color: #f4f4f4;
+  }
+  .left-column {
+      background-color: #4a4a4a;
+      color: white;
+      padding: 20px;
+      height: 100vh;
+  }
+  .left-column button {
+      background-color: #e7f0fc;
+      border: none;
+      color: #333;
+      padding: 10px;
+      width: 100%;
+      margin-bottom: 10px;
+      text-align: left;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+  }
+  .left-column button.active {
+      background-color: #5c9cf7;
+      color: white;
+  }
+  .right-column {
+      padding: 20px;
+      background-color: #ffffff;
+      height: 100vh;
+      overflow-y: auto;
+  }
+  .content-header {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+  }
+  .content-body {
+      font-size: 16px;
+  }
+  .row-item {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+  }
+  .row-item .col {
+      display: flex;
+      align-items: center;
+  }
+  .row-item .col:nth-child(1) {
+      flex-grow: 2; /* Give more space to the first column */
+  }
+  .row-item .col button,
+  .row-item .col span {
+      margin-left: 10px;
+  }
+  .add-new {
+      font-weight: bold;
+      color: #007bff;
+      cursor: pointer;
+  }
+  .nav-btn .step-number{
+    width: 30px;
+    height: 30px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+}
+.nav-btn .delete-btn{
+    width: 30px;
+    height: 30px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 0%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+</style>
+{% endblock custom_js_css_link %}
+{% block main_content %}
+<div class="container-fluid">
+  <div class="row">
+    
+  </div> 
+    <div class="row">
+      <!-- Left Column: Navigation -->
+      <div class="col-md-3 left-column">
+        <h5 class="text-center">Dự án 1</h5>
+        <button id="btn1" class="nav-btn d-flex align-items-center justify-content-sm-between " onclick="showContent('designProcess')">
+          <div class="d-flex align-items-center "> 
+            <span class="step-number">1</span>
+             Quy trình thiết kế 
+          </div>
+            <div class="delete-btn">-</div>
+        </button>
+        <button id="btn2" class="nav-btn d-flex align-items-center justify-content-sm-between " onclick="showContent('sourceCodeReview')">
+          <div class="d-flex align-items-center "> 
+            <span class="step-number">2</span>
+            Quy trình ĐG mã nguồn 
+          </div>
+            <div class="delete-btn">-</div>
+        </button>
+        <button id="btn3" class="nav-btn d-flex align-items-center justify-content-sm-between " onclick="showContent('staticAnalysis')">
+          <div class="d-flex align-items-center "> 
+            <span class="step-number">3</span>
+            Quy trình ĐG tĩnh 
+          </div>
+            <div class="delete-btn">-</div>
+        </button>
+        <button id="btn4" class="nav-btn d-flex align-items-center justify-content-sm-between " onclick="showContent('dynamicAnalysis')">
+          <div class="d-flex align-items-center "> 
+            <span class="step-number">4</span>
+            Quy trình ĐG động 
+          </div>
+            <div class="delete-btn">-</div>
+        </button>
+        <button id="btn4" class="nav-btn d-flex align-items-center justify-content-sm-between">
+            + Thêm bước
+      </div>
+  
+      <!-- Right Column: Content Area -->
+      <div class="col-md-9 right-column">
+        <div id="designProcessContent" class="content-area d-none">
+          <div class="content-header">Quy trình thiết kế</div>
+          <div class="content-body">
+            <div class="row-item">
+              <div class="col"><span>1.</span> <input type="text" value="Bản mô tả 1"></div>
+              <div class="col"><button class="btn btn-primary">Tải lên</button></div>
+              <div class="col"><span>Chưa có tài liệu</span></div>
+              <div class="col"><button class="btn btn-secondary" disabled>Nhận xét</button></div>
+              <div class="col"><button class="btn btn-success" disabled>Xem</button></div>
+            </div>
+            <div class="add-new" onclick="addNewRow()">+ Thêm tài liệu</div>
+          </div>
+        </div>
+  
+        <div id="sourceCodeReviewContent" class="content-area d-none">
+          <div class="content-header">Quy trình ĐG mã nguồn</div>
+          <div class="content-body">
+            <div class="row-item">
+              <div class="col"><span>1.</span> <input type="text" value="File mã nguồn 1"></div>
+              <div class="col"><button class="btn btn-primary">Tải lên</button></div>
+              <div class="col"><span>Chưa có tài liệu</span></div>
+              <div class="col"><button class="btn btn-secondary" disabled>Nhận xét</button></div>
+            </div>
+            <div class="add-new" onclick="addNewRow()">+ Thêm tài liệu</div>
+          </div>
+        </div>
+  
+        <div id="staticAnalysisContent" class="content-area d-none">
+          <div class="content-header">Quy trình ĐG tĩnh</div>
+          <div class="content-body">
+            <div class="row">
+                <div class="col-12">
+                  <div class="card">
+                    <div class="p-2">
+                      <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                            <a class="btn btn-soft-primary float-end ms-1" data-bs-toggle="modal" href="#exampleModalToggle" role="button">Add New File</a>
+                          <!-- <a class="btn btn-soft-primary float-end ms-1" href="{% url 'add_file' current_project.slug %}" data-toggle="tooltip" data-placement="top" title="Add New File">Add New File</a> -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="card">
+                    <table id="file_table" class="table dt-responsive w-100">
+                      <thead>
+                        <tr>
+                          <th>File Name</th>
+                          <th>Shortname</th>
+                          <th>Progress</th>
+                          <th class="text-center">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for file in files.all %}
+                        <tr>
+                          <td>{{ file.name }}</td>
+                          <td>{{ file.short_name }}</td>
+                          <td class="text-center" id="{{file.id}}">
+                            <div class="progress progress-md mt-1">
+                              <div class="progress-bar bg-info" role="progressbar" style="width: 0%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                            <a onclick="scan_api({{ file.id }}, '{{ file.name }}', 'file')" class="btn btn-soft-primary" href="#" data-toggle="tooltip" data-placement="top" title="Scan File Upload">
+                              Scan
+                            </a>
+                            <a onclick="delete_api({{ file.id }}, '{{ file.name }}', 'file')" class="btn btn-soft-danger text-danger" href="#" data-toggle="tooltip" data-placement="top" title="Delete File Upload">
+                              <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather table-delete feather-x-circle">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                              </svg> -->
+                              Delete
+                            </a>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            <div class="row-item">
+              <div class="col"><span>1.</span> <input type="text" value="File phân tích tĩnh 1"></div>
+              <div class="col"><button class="btn btn-primary">Tải lên</button></div>
+              <div class="col"><span>Chưa có tài liệu</span></div>
+              <div class="col"><button class="btn btn-secondary" disabled>Nhận xét</button></div>
+            </div>
+            <div class="add-new" onclick="addNewRow()">+ Thêm tài liệu</div>
+          </div>
+        </div>
+  
+        <div id="dynamicAnalysisContent" class="content-area d-none">
+          <div class="content-header">Quy trình ĐG động</div>
+          <div class="content-body">
+            <div class="row-item">
+              <div class="col"><span>1.</span> <input type="text" value="File phân tích động 1"></div>
+              <div class="col"><button class="btn btn-primary">Tải lên</button></div>
+              <div class="col"><span>Chưa có tài liệu</span></div>
+              <div class="col"><button class="btn btn-secondary" disabled>Nhận xét</button></div>
+            </div>
+            <div class="add-new" onclick="addNewRow()">+ Thêm tài liệu</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalToggleLabel">Upload Source File</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="card">
+                <div class="card-body">
+                  <form class="simple-example" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                      <div class="col-6">
+                        <label for="name" class="form-label">File Name</label>
+                        {{ form.name }}
+                      </div>
+                      <div class="col-6">
+                        <label for="short_name" class="form-label">Short Name</label>
+                        {{ form.short_name }}
+                        {% if form.errors.short_name %}
+                        <div class="invalid-feedback" style="display: block;">
+                          {{ form.errors.short_name|striptags }}
+                        </div>
+                        {% endif %}
+                        <p class="text-primary mt-1">Please keep the short names without spaces.</p>
+                      </div>
+                      <div>
+                        <h4 class="header-title">Select file</h4>
+                        <p class="text-primary">Your file must be a *.tar file.</p>
+                      </div>
+                      <div class="custom-file mb-4">
+                        <label class="form-label" for="tarFile">Choose *.tar file</label>
+                        {{ form.upload_file }}
+                      </div>
+                    </div>
+                    <button class="btn btn-primary submit-fn mt-2 float-end" type="submit">Upload File</button>
+                  </form>
+                </div>
+              </div>
+        </div>
+        <div class="modal-footer">
+          <!-- <button class="btn btn-primary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal">Open second modal</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  
+{% endblock main_content %}
+{% block page_level_script %}
+<script src="{% static 'plugins/select2/select2.min.js' %}"></script>
+<script src="{% static 'note/js/todo.js' %}"></script>
+<script src="{% static 'plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+<script>
+    function showContent(process) {
+      const sections = {
+        designProcess: 'designProcessContent',
+        sourceCodeReview: 'sourceCodeReviewContent',
+        staticAnalysis: 'staticAnalysisContent',
+        dynamicAnalysis: 'dynamicAnalysisContent'
+      };
+  
+      // Hide all sections
+      Object.values(sections).forEach(sectionId => {
+        document.getElementById(sectionId).classList.add('d-none');
+      });
+  
+      // Show the selected section
+      document.getElementById(sections[process]).classList.remove('d-none');
+  
+      // Remove active class from all buttons
+      document.querySelectorAll('.nav-btn').forEach(button => {
+        button.classList.remove('active');
+      });
+  
+      // Add active class to the clicked button
+      document.getElementById('btn' + (Object.keys(sections).indexOf(process) + 1)).classList.add('active');
+    }
+  
+    // Function to add a new row for adding documents
+    function addNewRow() {
+      const body = document.querySelector('.content-body');
+      const newRow = document.createElement('div');
+      newRow.classList.add('row-item');
+      newRow.innerHTML = `
+        <div class="col"><span>3.</span> <input type="text" value="Bản mô tả 3"></div>
+        <div class="col"><button class="btn btn-primary">Tải lên</button></div>
+        <div class="col"><span>Chưa có tài liệu</span></div>
+        <div class="col"><button class="btn btn-secondary" disabled>Nhận xét</button></div>
+        <div class="col"><button class="btn btn-success" disabled>Xem</button></div>
+      `;
+      body.insertBefore(newRow, document.querySelector('.add-new'));
+    }
+  </script>
+<!-- SAST -->
+<script>
+    $(document).ready(function() {
+      var file_table = $('#file_table').DataTable({
+        "oLanguage": {
+          "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>' },
+          "sInfo": "Showing page _PAGE_ of _PAGES_",
+          "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+          "sSearchPlaceholder": "Search...",
+          "sLengthMenu": "Results :  _MENU_",
+        },
+        "dom": "<'dt--top-section'<'row'<'col-12 col-sm-6 d-flex justify-content-sm-start justify-content-center mt-sm-0 mt-3'f><'col-12 col-sm-6 d-flex justify-content-sm-end justify-content-center'l>>>" +
+        "<'table-responsive'tr>" +
+        "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center'<'dt--pages-count  mb-sm-0 mb-3'i><'dt--pagination'p>>",
+        "lengthMenu": [5, 10, 20, 50],
+        "pageLength": 50,
+        "initComplete": function(settings, json) {
+          $('[data-toggle="tooltip"]').tooltip();
+        }
+      });
+      multiCheck(file_table);
+    });
+    
+    function scan_api(id, item)
+    {
+        var scanAPI = 'scan_file/'+id;
+        fetch(scanAPI, {
+          method: 'POST',
+            credentials: "same-origin",
+            headers: {
+              "X-CSRFToken": getCookie("csrftoken")
+            }
+        })
+          .then(function(response){
+            return response.json()
+          })
+          .then(function(data){
+            var progressCol = document.getElementById(`${data.id}`)
+            progressCol.innerHTML = `
+              <div class="progress progress-md mt-1">
+                 <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+               </div>
+            `;
+            console.log(data);
+          })
+          .catch(function(err){
+            console.log(err);
+          })
+    }
+    </script>
+<script type="text/javascript">
+    // var input = document.getElementById("name");
+    // var shortName = document.getElementById("short_name");
+    
+    // input.addEventListener("input", function() {
+    //   inputValue = document.getElementById("name").value;
+    //   shortName.value = inputValue.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase();;
+    // });
+    
+    // shortName.addEventListener("input", function() {
+    //   inputValue = document.getElementById("short_name").value;
+    //   shortName.value = inputValue.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase();;
+    // });
+    
+    
+    // // custom file input
+    // $(".custom-file-input").on("change", function() {
+    //   var fileName = $(this).val().split("\\").pop();
+    //   $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    // });
+</script>
+<!-- Upload file -->
+ <script type="text/javascript">
+var input = document.getElementById("name");
+var shortName = document.getElementById("short_name");
+input.addEventListener("input", function() {
+  inputValue = document.getElementById("name").value;
+  shortName.value = inputValue.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase();;
+});
+shortName.addEventListener("input", function() {
+  inputValue = document.getElementById("short_name").value;
+  shortName.value = inputValue.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase();;
+});
+// custom file input
+$(".custom-file-input").on("change", function() {
+  var fileName = $(this).val().split("\\").pop();
+  $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+});
+</script>
+<!-- <script type="text/javascript">
+    var input = document.getElementById("name");
+    var shortName = document.getElementById("short_name");
+    
+    input.addEventListener("input", function() {
+      inputValue = document.getElementById("name").value;
+      shortName.value = inputValue.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase();;
+    });
+    
+    shortName.addEventListener("input", function() {
+      inputValue = document.getElementById("short_name").value;
+      shortName.value = inputValue.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase();;
+    });
+    
+    
+    // custom file input
+    $(".custom-file-input").on("change", function() {
+      var fileName = $(this).val().split("\\").pop();
+      $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+    </script> -->
+{% endblock page_level_script %}

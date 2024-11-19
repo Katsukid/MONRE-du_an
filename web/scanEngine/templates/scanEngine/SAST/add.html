@@ -1,0 +1,83 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+Add New File
+{% endblock title %}
+
+
+{% block custom_js_css_link %}
+{% endblock custom_js_css_link %}
+
+{% block breadcrumb_title %}
+<li class="breadcrumb-item"><a href="{% url 'file_list' current_project.slug %}">File Upload</a></li>
+<li class="breadcrumb-item active">Add File</li>
+{% endblock breadcrumb_title %}
+
+{% block page_title %}
+Add New File
+{% endblock page_title %}
+
+{% block main_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <form class="simple-example" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-6">
+              <label for="name" class="form-label">File Name</label>
+              {{ form.name }}
+            </div>
+            <div class="col-6">
+              <label for="short_name" class="form-label">Short Name</label>
+              {{ form.short_name }}
+              {% if form.errors.short_name %}
+              <div class="invalid-feedback" style="display: block;">
+                {{ form.errors.short_name|striptags }}
+              </div>
+              {% endif %}
+              <p class="text-primary mt-1">Please keep the short names without spaces.</p>
+            </div>
+            <div>
+              <h4 class="header-title">Select file</h4>
+              <p class="text-primary">Your file must be a *.tar file.</p>
+            </div>
+            <div class="custom-file mb-4">
+              <label class="form-label" for="tarFile">Choose *.tar file</label>
+              {{ form.upload_file }}
+            </div>
+          </div>
+          <button class="btn btn-primary submit-fn mt-2 float-end" type="submit">Upload File</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}
+
+
+{% block page_level_script %}
+<script type="text/javascript">
+var input = document.getElementById("name");
+var shortName = document.getElementById("short_name");
+
+input.addEventListener("input", function() {
+  inputValue = document.getElementById("name").value;
+  shortName.value = inputValue.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase();
+});
+
+shortName.addEventListener("input", function() {
+  inputValue = document.getElementById("short_name").value;
+  shortName.value = inputValue.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase();
+});
+
+
+// custom file input
+$(".custom-file-input").on("change", function() {
+  var fileName = $(this).val().split("\\").pop();
+  $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+});
+</script>
+{% endblock page_level_script %}

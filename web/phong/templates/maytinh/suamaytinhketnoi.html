@@ -1,0 +1,82 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+Sửa máy tính kết nối
+{% endblock title %}
+
+{% block custom_js_css_link %}
+{% endblock custom_js_css_link %}
+
+{% block breadcrumb_title %}
+{% endblock breadcrumb_title %}
+
+{% block page_title %}
+Sửa máy tính kết nối
+{% endblock page_title %}
+
+{% block main_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="p-2">
+        <div class="row">
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+            <h5>Sửa máy tính kết nối</h5>
+          </div>
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+            <a class="btn btn-soft-primary float-end ms-1" data-toggle="tooltip" data-placement="top" title="Nhập nhiều">Nhập nhiều</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <form method="POST" action="{% url 'suamaytinhketnoi' current_project.slug maytinh.id %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="phongSelect" class="form-label">Phòng</label>
+                {{ form.phong }}
+            </div>
+            <div class="mb-3">
+                <label for="mayTinhTen" class="form-label">Tên máy</label>
+                {{ form.ten }}
+            </div>
+            <div class="mb-3">
+                <label for="mayTinhIP" class="form-label">IP</label>
+                {{ form.ip }}
+            </div>
+            <div class="mb-3">
+                <label for="mayTinhMAC" class="form-label">MAC</label>
+                {{ form.mac }}
+            </div>
+            <div class="mb-3">
+                <label for="mayTinhMoTa" class="form-label">Mô tả</label>
+                {{ form.mo_ta }}
+            </div>
+            <div class="mb-3"></div>
+                <label for="mayTinhChuSoHuu" class="form-label">Chủ sở hữu</label>
+                {{ form.chu_so_huu }}
+            </div>
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary">Huỷ</button>
+                <div>
+                    <button type="button" class="btn btn-warning me-2">Xoá thông tin</button>
+                    <button type="submit" class="btn btn-primary">Sửa</button>
+                </div>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}
+
+
+{% block page_level_script %}
+{% endblock page_level_script %}

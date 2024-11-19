@@ -1,0 +1,144 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+File Upload
+{% endblock title %}
+
+{% block custom_js_css_link %}
+{% endblock custom_js_css_link %}
+
+{% block breadcrumb_title %}
+<li class="breadcrumb-item"><a href="{% url 'file_list' current_project.slug %}">File Upload</a></li>
+<li class="breadcrumb-item active">All File Upload</li>
+{% endblock breadcrumb_title %}
+
+{% block page_title %}
+Add New File
+{% endblock page_title %}
+
+{% block main_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="p-2">
+        <div class="row">
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+          </div>
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+            <a class="btn btn-soft-primary float-end ms-1" href="{% url 'add_file' current_project.slug %}" data-toggle="tooltip" data-placement="top" title="Add New File">Add New File</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <table id="file_table" class="table dt-responsive w-100">
+        <thead>
+          <tr>
+            <th class="text-center">File Name</th>
+            <th class="text-center">Shortname</th>
+            <!-- <th>Progress</th> -->
+            <th class="text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for file in files.all %}
+          <tr>
+            <td class="text-center">{{ file.name }}</td>
+            <td class="text-center">{{ file.short_name }}</td>
+            <!-- <td class="text-center" id="{{file.id}}">
+              <div class="progress progress-md mt-1">
+                <div class="progress-bar bg-info" role="progressbar" style="width: 0%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </td> -->
+            <td class="text-center">
+              <a onclick="scan_api({{ file.id }}, '{{ file.name }}', 'file')" class="btn btn-soft-primary" href="#" data-toggle="tooltip" data-placement="top" title="Scan File Upload">
+                Scan
+              </a>
+              <a onclick="delete_api({{ file.id }}, '{{ file.name }}', 'file')" class="btn btn-soft-danger text-danger" href="#" data-toggle="tooltip" data-placement="top" title="Delete File Upload">
+                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather table-delete feather-x-circle">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="15" y1="9" x2="9" y2="15"></line>
+                  <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg> -->
+                Delete
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}
+
+
+{% block page_level_script %}
+<script src="{% static 'scanEngine/js/custom_scan_engine.js' %}"></script>
+<script src="{% static 'custom/custom.js' %}"></script>
+<script src="{% static 'targetApp/js/custom_organization.js' %}"></script>
+<script>
+$(document).ready(function() {
+  var file_table = $('#file_table').DataTable({
+    "oLanguage": {
+      "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>' },
+      "sInfo": "Showing page _PAGE_ of _PAGES_",
+      "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+      "sSearchPlaceholder": "Search...",
+      "sLengthMenu": "Results :  _MENU_",
+    },
+    "dom": "<'dt--top-section'<'row'<'col-12 col-sm-6 d-flex justify-content-sm-start justify-content-center mt-sm-0 mt-3'f><'col-12 col-sm-6 d-flex justify-content-sm-end justify-content-center'l>>>" +
+    "<'table-responsive'tr>" +
+    "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center'<'dt--pages-count  mb-sm-0 mb-3'i><'dt--pagination'p>>",
+    "lengthMenu": [5, 10, 20, 50],
+    "pageLength": 50,
+    "initComplete": function(settings, json) {
+      $('[data-toggle="tooltip"]').tooltip();
+    }
+  });
+  multiCheck(file_table);
+});
+
+function scan_api(id, item)
+{
+    var scanAPI = 'scan_file/'+id;
+    swal.queue([{
+        title: 'Are you sure you want to scan this file?',
+        text: "You won't be able to revert this!",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Scan',
+        padding: '2em',
+        showLoaderOnConfirm: true,
+        preConfirm: function() {
+          return fetch(scanAPI, {
+	            method: 'POST',
+                credentials: "same-origin",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken")
+                }
+            })
+            .then(function (response) {
+              return response.json();
+            })
+            .then(function(data) {
+              // TODO Look for better way
+              // return location.reload();
+              return location.href = 'https://127.0.0.1/scan/default/history/sastscan'
+            })
+            .catch(function() {
+              swal.insertQueueStep({
+                type: 'error',
+                title: 'Oops! Unable to scan'
+              })
+            })
+        }
+    }])
+}
+</script>
+{% endblock page_level_script %}

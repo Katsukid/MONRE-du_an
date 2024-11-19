@@ -1,0 +1,194 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+Danh sách nhân viên
+{% endblock title %}
+
+{% block custom_js_css_link %}
+{% endblock custom_js_css_link %}
+
+{% block breadcrumb_title %}
+<!-- <li class="breadcrumb-item"><a href="{% url 'file_list' current_project.slug %}">File Upload</a></li>
+<li class="breadcrumb-item active">All File Upload</li> -->
+{% endblock breadcrumb_title %}
+
+{% block page_title %}
+Danh sách nhân viên
+{% endblock page_title %}
+
+{% block main_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="p-2">
+        <div class="row">
+          <!-- Dropdown chọn phòng -->
+          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-6">
+            <select class="form-control" id="phongSelect" placeholder="Chọn phòng">
+                <option value="">Chọn phòng</option>
+                <!-- Giả sử có danh sách phòng lấy từ server -->
+                {% for phong in phongs %}
+                    <option value="{{ phong.id }}" {% if phong.id == phong_id %} selected {% endif %}>{{ phong.ten }}</option>
+                {% endfor %}
+            </select>
+          </div>
+
+          <!-- Dropdown chọn bộ phận -->
+          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-6">
+            <select class="form-control" id="bophanSelect" placeholder="Chọn bộ phận">
+              <option value="">Chọn bộ phận</option>
+            </select>
+          </div>
+
+          <!-- Nút thêm nhân viên mới -->
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+            <a class="btn btn-soft-primary float-end ms-1" data-toggle="tooltip" data-placement="top" title="Thêm nhân viên mới" href="{% url 'themnhanvien' current_project.slug %}">
+              Thêm mới
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bảng danh sách nhân viên -->
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <table id="nhanvien_table" class="table dt-responsive w-100">
+        <thead>
+          <tr>
+            <th class="text-center">TT</th>
+            <th class="text-center">Tên nhân viên</th>
+            <th class="text-center">Chức vụ</th>
+            <th class="text-center">Bộ phận</th>
+            <th class="text-center">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="nhanVienTableBody">
+          <!-- Các nhân viên sẽ được load động qua Ajax -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}
+
+{% block page_level_script %}
+<script type="text/javascript">
+function loadBoPhan() {
+    var bophanId = null;  // Khởi tạo giá trị mặc định cho bophanId
+    {% if bophan_id %}
+        bophanId = "{{ bophan_id }}";  // Lấy giá trị bophan_id từ template nếu có
+    {% endif %}
+    
+    var phongId = $('#phongSelect').val();  // Lấy giá trị phòng được chọn
+    if (phongId) {
+        $.ajax({
+            url: "{% url 'get_bophan_by_phong' %}",  // Đường dẫn tới view xử lý Ajax trong Django
+            data: {
+                'phong_id': phongId  // Gửi ID phòng đến server
+            },
+            success: function(data) {
+                // Làm sạch danh sách bộ phận trước khi thêm mới
+                $('#bophanSelect').empty();
+                $('#bophanSelect').append('<option value="">Chọn bộ phận</option>');
+
+                $.each(data.bophans, function(index, value) {
+                    // Kiểm tra nếu bophanId được chọn trước đó
+                    if (bophanId && bophanId == value.id) {
+                        $('#bophanSelect').append('<option value="' + value.id + '" selected>' + value.ten + '</option>');
+                    } else {
+                        $('#bophanSelect').append('<option value="' + value.id + '">' + value.ten + '</option>');
+                    }
+                });
+              loadNhanVien(); // Tải danh sách nhân viên sau khi đã chọn bộ phận
+            },
+            error: function() {
+                alert('Không thể tải danh sách bộ phận. Vui lòng thử lại.');
+            }
+        });
+    } else {
+        $('#bophanSelect').empty();
+        $('#bophanSelect').append('<option value="">Chọn bộ phận</option>');
+    }
+}
+
+function loadNhanVien() {
+    var bophanId = $('#bophanSelect').val();  // Lấy giá trị bộ phận được chọn
+    console.log(bophanId);
+    if (bophanId) {
+        $.ajax({
+            url: "{% url 'get_nhanvien_by_bophan' %}",  // Đường dẫn tới view xử lý Ajax trong Django
+            data: {
+                'bophan_id': bophanId  // Gửi ID bộ phận đến server
+            },
+            success: function(data) {
+                console.log(data);
+                // Làm sạch bảng trước khi thêm dữ liệu mới
+                $('#file_table').DataTable().destroy(); // Xóa DataTable hiện tại
+                $('#nhanVienTableBody').empty();
+                $.each(data.nhanviens, function(index, value) {
+                    var editUrl = "{% url 'suanhanvien' current_project.slug 0 %}".replace("0", value.id);
+                    var deleteUrl = "{% url 'xoanhanvien' current_project.slug 0 %}".replace("0", value.id);
+                    var row = '<tr>';
+                    row += '<td class="text-center">' + (index + 1) + '</td>';
+                    row += '<td class="text-center">' + value.ho_ten + '</td>';
+                    row += '<td class="text-center">' + value.chuc_vu + '</td>';
+                    row += '<td class="text-center">' + value.bo_phan__ten + '</td>';
+                    row += '<td class="text-center">';
+                    row += '<a class="btn btn-soft-warning" href="'+ editUrl +'" title="Sửa">Sửa</a> ';
+                    row += '<a class="btn btn-soft-danger text-danger" href="' + deleteUrl + '" title="Xóa">Xóa</a>';
+                    row += '</td>';
+                    row += '</tr>';
+                    $('#nhanVienTableBody').append(row);
+                });
+
+                // Khởi tạo lại DataTable sau khi đã thêm dữ liệu mới
+                loadTableFilter();
+            },
+            error: function() {
+                alert('Không thể tải danh sách nhân viên. Vui lòng thử lại.');
+            }
+        });
+    } else {
+          $('#file_table').DataTable().destroy(); // Xóa DataTable hiện tại
+          $('#nhanVienTableBody').empty();
+    }
+}
+
+function loadTableFilter() {
+    var file_table = $('#file_table').DataTable({
+    "oLanguage": {
+      "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>' },
+      "sInfo": "Showing page _PAGE_ of _PAGES_",
+      "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+      "sSearchPlaceholder": "Search...",
+      "sLengthMenu": "Results :  _MENU_",
+    },
+    "dom": "<'dt--top-section'<'row'<'col-12 col-sm-6 d-flex justify-content-sm-start justify-content-center mt-sm-0 mt-3'f><'col-12 col-sm-6 d-flex justify-content-sm-end justify-content-center'l>>>" +
+    "<'table-responsive'tr>" +
+    "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center'<'dt--pages-count  mb-sm-0 mb-3'i><'dt--pagination'p>>",
+    "lengthMenu": [5, 10, 20, 50],
+    "pageLength": 50,
+    "initComplete": function(settings, json) {
+      $('[data-toggle="tooltip"]').tooltip();
+    }
+  });
+  multiCheck(file_table);
+}
+
+$(document).ready(function() {
+    $('#phongSelect').change(function() {
+        loadBoPhan();
+        $('#nhanVienTableBody').empty();  // Làm sạch bảng nhân viên khi thay đổi phòng
+    });
+    loadBoPhan();  // Tải danh sách bộ phận khi trang được tải
+});
+$('#bophanSelect').on('change', function() {
+    loadNhanVien();
+});
+</script>
+{% endblock page_level_script %}

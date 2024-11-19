@@ -1,0 +1,101 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+Thêm rủi ro ATTT
+{% endblock title %}
+
+{% block custom_js_css_link %}
+{% endblock custom_js_css_link %}
+
+{% block breadcrumb_title %}
+<!-- <li class="breadcrumb-item"><a href="{% url 'file_list' current_project.slug %}">File Upload</a></li>
+<li class="breadcrumb-item active">All File Upload</li> -->
+{% endblock breadcrumb_title %}
+
+{% block page_title %}
+Thêm rủi ro ATTT
+{% endblock page_title %}
+
+{% block main_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="p-2">
+        <div class="row">
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+          </div>
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+            <!-- <a class="btn btn-soft-primary float-end ms-1" href="{% url 'add_file' current_project.slug %}" data-toggle="tooltip" data-placement="top" title="Add New File">Add New File</a> -->
+            <a class="btn btn-soft-primary float-end ms-1" data-toggle="tooltip" data-placement="top" title="Add New File">Nhập nhiều</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <form>
+            <div class="mb-3">
+                <label for="sourceName" class="form-label">Tên loại lỗ hổng</label>
+                <input type="text" class="form-control" id="sourceName" placeholder="Common Vulnerabilities and Exposures">
+            </div>
+            <div class="mb-3">
+                <label for="sourceCode" class="form-label">Ký hiệu</label>
+                <input type="text" class="form-control" id="sourceCode" placeholder="CVE">
+            </div>
+            <div class="mb-3">
+                <label for="sourceDescription" class="form-label">Mô tả</label>
+                <textarea class="form-control" id="sourceDescription" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="technicalAnalysis" class="form-label">Tài liệu phân tích kỹ thuật</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="technicalAnalysis" readonly>
+                    <button class="btn btn-outline-secondary" type="button">Tải lên tài liệu phân tích kỹ thuật</button>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary">Huỷ</button>
+                <div>
+                    <button type="button" class="btn btn-warning me-2">Xoá thông tin</button>
+                    <button type="submit" class="btn btn-primary">Thêm</button>
+                </div>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}
+
+
+{% block page_level_script %}
+<script src="{% static 'scanEngine/js/custom_scan_engine.js' %}"></script>
+<script src="{% static 'custom/custom.js' %}"></script>
+<script src="{% static 'targetApp/js/custom_organization.js' %}"></script>
+<script>
+$(document).ready(function() {
+  var file_table = $('#file_table').DataTable({
+    "oLanguage": {
+      "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>' },
+      "sInfo": "Showing page _PAGE_ of _PAGES_",
+      "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+      "sSearchPlaceholder": "Search...",
+      "sLengthMenu": "Results :  _MENU_",
+    },
+    "dom": "<'dt--top-section'<'row'<'col-12 col-sm-6 d-flex justify-content-sm-start justify-content-center mt-sm-0 mt-3'f><'col-12 col-sm-6 d-flex justify-content-sm-end justify-content-center'l>>>" +
+    "<'table-responsive'tr>" +
+    "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center'<'dt--pages-count  mb-sm-0 mb-3'i><'dt--pagination'p>>",
+    "lengthMenu": [5, 10, 20, 50],
+    "pageLength": 50,
+    "initComplete": function(settings, json) {
+      $('[data-toggle="tooltip"]').tooltip();
+    }
+  });
+  multiCheck(file_table);
+});
+</script>
+{% endblock page_level_script %}

@@ -1,0 +1,201 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+Đăng ký hồ sơ phần mềm
+{% endblock title %}
+
+{% block page_title %}
+Đăng ký hồ sơ phần mềm
+{% endblock page_title %}
+
+{% block main_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <form id="dangKyPhanMemForm" method="POST" action="{% url 'themhosophanmem' current_project.slug %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="nguoi_them" class="form-label">Người thêm  - {{error}}</label>
+                {{ form.nguoi_them }}
+            </div>
+            <div class="mb-3">
+                <label for="phien_ban" class="form-label">Phiên bản</label>
+                <div class="input-group">
+                    {{ form.phien_ban }}
+                    <span class="input-group-text flex-grow-1">Phiên bản v1</span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="giai_doan" class="form-label">Giai đoạn phát triển</label>
+                <div class="input-group">
+                    {{ form.giai_doan }}
+                    <button type="button" class="btn btn-outline-secondary" onclick="themgiaidoan()">Thêm giai đoạn</button>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="nen_tang" class="form-label">Nền tảng phát triển</label>
+                <div class="input-group">
+                    {{ form.nen_tang }}
+                    <button type="button" class="btn btn-outline-secondary" onclick="themnentang()">Thêm nền tảng</button>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="mo_ta" class="form-label">Mô tả</label>
+                {{ form.mo_ta }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="tai_lieu">Tài liệu</label>
+                <div class="input-group">
+                    {{ form.tai_lieu }}
+                    <input type="text" class="form-control" placeholder="Tài liệu 1.pdf | Tài liệu 1.zip" disabled>
+                </div>
+                <button class="btn btn-outline-secondary" type="button">+</button>
+            </div>
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary">Huỷ</button>
+                <div>
+                    <button type="button" class="btn btn-warning me-2">Xoá thông tin</button>
+                    <button type="submit" class="btn btn-primary">Thêm</button>
+                </div>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Thêm Nền Tảng -->
+<div class="modal fade" id="generateThemNenTangModal" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="myCenterModalLabel">Thêm nền tảng phát triển</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="themNenTangForm">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="ten_nentang" class="form-label">Nền tảng phát triển</label>
+                {{formNenTang.ten}}
+                <!-- <input type="text" name="ten" class="form-control" id="ten" placeholder="Nền tảng phát triển 1"> -->
+            </div>
+            <div class="mb-3">
+                <label for="mo_ta_nentang" class="form-label">Mô tả</label>
+                {{formNenTang.mo_ta}}
+                <!-- <textarea class="form-control" name="mo_ta" id="mo_ta" rows="3" placeholder="Mô tả nền tảng"></textarea> -->
+            </div>
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                <button type="submit" class="btn btn-primary">Thêm</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Modal Thêm Giai Đoạn -->
+<div class="modal fade" id="generateThemGiaiDoanModal" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="myCenterModalLabel">Thêm giai đoạn phát triển</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="themGiaiDoanForm">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="ten_giaidoan" class="form-label">Giai đoạn phát triển</label>
+                {{formGiaiDoan.ten}}
+                <!-- <input type="text" name="ten" class="form-control" id="ten_giaidoan" placeholder="Giai đoạn phát triển 1"> -->
+            </div>
+            <div class="mb-3">
+                <label for="mo_ta_giaidoan" class="form-label">Mô tả</label>
+                {{formGiaiDoan.mo_ta}}
+                <!-- <textarea class="form-control" name="mo_ta" id="mo_ta_giaidoan" rows="3" placeholder="Mô tả giai đoạn"></textarea> -->
+            </div>
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                <button type="submit" class="btn btn-primary">Thêm</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock main_content %}
+
+{% block page_level_script %}
+<script>
+$(document).ready(function() {
+    $('#themNenTangForm').on('submit', function(event) {
+        event.preventDefault();
+        var formData = {
+            ten: $('#ten_nentang').val(),
+            mo_ta: $('#mo_ta_nentang').val()
+        };
+        $.ajax({
+            url: "{% url 'themnentang' current_project.slug %}",
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            data: JSON.stringify(formData),
+            contentType: 'application/json',
+            success: function(data) {
+                if (data.success) {
+                    alert('Thêm nền tảng thành công');
+                    $('#platform').append('<option value="' + data.id + '" selected>' + data.ten + '</option>');
+                    $('#generateThemNenTangModal').modal('hide');
+                } else {
+                    alert('Có lỗi xảy ra khi thêm nền tảng');
+                }
+            },
+            error: function(error) {
+                console.log('Error:', error);
+            }
+        });
+    });
+
+    $('#themGiaiDoanForm').on('submit', function(event) {
+        event.preventDefault();
+        var formData = {
+            ten: $('#ten_giaidoan').val(),
+            mo_ta: $('#mo_ta_giaidoan').val()
+        };
+        $.ajax({
+            url: "{% url 'themgiaidoan' current_project.slug %}",
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            data: JSON.stringify(formData),
+            contentType: 'application/json',
+            success: function(data) {
+                if (data.success) {
+                    alert('Thêm giai đoạn thành công');
+                    $('#developmentStage').append('<option value="' + data.id + '" selected>' + data.ten + '</option>');
+                    $('#generateThemGiaiDoanModal').modal('hide');
+                } else {
+                    alert('Có lỗi xảy ra khi thêm giai đoạn');
+                }
+            },
+            error: function(error) {
+                console.log('Error:', error);
+            }
+        });
+    });
+});
+
+function themnentang() {
+    $('#generateThemNenTangModal').modal('show');
+}
+
+function themgiaidoan() {
+    $('#generateThemGiaiDoanModal').modal('show');
+}
+</script>
+{% endblock page_level_script %}
